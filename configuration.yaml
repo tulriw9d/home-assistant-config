@@ -1,0 +1,166 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  name: Home
+  # Location required to calculate the time the sun rises and sets
+  latitude: 51.96698867
+  longitude: 0.14583556
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  elevation: 88.0
+  # metric for Metric, imperial for Imperial
+  unit_system: metric
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  time_zone: Europe/London
+
+  customize:
+    # Only the 'entity_id' is required.  All other options are optional.
+    climate.upstairs:
+      friendly_name: Heating
+
+# Show links to resources in log and frontend
+# introduction:
+
+# Enables the frontend
+frontend:
+
+http:
+  # Uncomment this to add a password (recommended!)
+  # api_password: PASSWORD
+  # Uncomment this if you are using SSL or running in Docker etc
+  # base_url: example.duckdns.org:8123
+
+# Checks for available updates
+updater:
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time.
+history:
+
+# View all events in a logbook
+logbook:
+
+# Track the sun
+sun:
+
+# Weather Prediction
+sensor:
+  platform: yr
+
+   - platform: kodi
+     host: 192.168.10.17
+
+ring:
+  username: rhys.orwin@gmail.com
+  password: tulriw9d
+
+notify:
+  - name: push_to_android
+    platform: pushbullet
+    api_key: o.hARAhIwhHmuVBabiNaQ0yWr0ZOfMkwSf
+
+# Text to speech
+tts:
+  platform: google
+
+mqtt:
+  broker: 192.168.10.40
+  port: 1883
+  client_id: home-assistant-1
+  keepalive: 60
+  username: rhys
+  password: tulriw9d
+
+device_tracker:
+  - platform: owntracks
+    max_gps_accuracy: 200
+    waypoints: True
+
+nest:
+  client_id: 1922a5b6-5222-43e4-821b-e2b185f536fc
+  client_secret: LWifjnKcUZvGhR5NpDIJFUdzi
+  sensors:
+    monitored_conditions:
+      - 'temperature'
+      - 'humidity'
+
+emulated_hue:
+#  listen_port: 80
+
+zone:
+  - name: WorldRemit
+    latitude: 51.497649
+    longitude: -0.136156
+    radius: 200
+    icon: mdi:briefcase
+
+  - name: Creo
+    latitude: 51.848075
+    longitude: 0.458517   
+    radius: 200
+    icon: mdi:building
+
+automation: 
+  - alias: Send message at a given time
+    trigger:
+      platform: time
+      hours: 18
+      minutes: 55
+      seconds: 0
+    action:
+      service: notify.push_to_android
+      data:
+        message: Everything is still good
+
+  - alias: Outside light on at sunset
+    trigger:
+     platform: sun
+     event: sunset
+    action:
+     service: light.turn_on
+     entity_id: light.outside
+
+  - alias: Outside light off at 10pm
+    trigger:
+      platform: time
+      hours: 22
+      minutes: 0
+      seconds: 0
+    action:
+     service: light.turn_off
+     entity_id: light.outside
+  
+  - alias: Outside light off at sunrise
+    trigger:
+     platform: sun
+     event: sunrise
+     offset: '+00:30:00'
+    action:
+     service: light.turn_off
+     entity_id: light.outside
+
+  - alias: Outside light on at 6am
+    trigger:
+      platform: time
+      hours: 06
+      minutes: 0
+      seconds: 0
+    action:
+     service: light.turn_on
+     entity_id: light.outside
+
+group:
+####VIEWS
+  livingroom:
+    view: yes
+    name: Living Room
+    entities: 
+      - group.thermostat
+####GROUPS
+  thermostat:
+    name: Nest
+    entities:
+      - climate.upstairs
