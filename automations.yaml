@@ -1,1 +1,47 @@
+ - alias: Send message at a given time
+    trigger:
+      platform: time
+      hours: 18
+      minutes: 55
+      seconds: 0
+    action:
+      service: notify.push_to_android
+      data:
+        message: Everything is still good
 
+  - alias: Outside light on at sunset
+    trigger:
+     platform: sun
+     event: sunset
+    action:
+     service: light.turn_on
+     entity_id: light.outside
+
+  - alias: Outside light off at 10pm
+    trigger:
+      platform: time
+      hours: 22
+      minutes: 0
+      seconds: 0
+    action:
+     service: light.turn_off
+     entity_id: light.outside
+  
+  - alias: Outside light off at sunrise
+    trigger:
+     platform: sun
+     event: sunrise
+     offset: '+00:30:00'
+    action:
+     service: light.turn_off
+     entity_id: light.outside
+
+  - alias: Outside light on at 6am
+    trigger:
+      platform: time
+      hours: 06
+      minutes: 0
+      seconds: 0
+    action:
+     service: light.turn_on
+     entity_id: light.outside
